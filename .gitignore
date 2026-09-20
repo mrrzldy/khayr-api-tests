@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+
+# Reports output (generated, don't commit)
+reports/
+
+# Playwright artifacts
+test-results/
+playwright-report/
+playwright-report.pdf
+
+# Environment variables
+.env
+.env.local
+.env*.local
+
+# State files
+.state.json
+
+# Debug / scratch files
+debug_all_requests.json
+api_discovery_report.json
+batch_test_accounts.txt
+test-log.txt
+test_b64.txt
+login_screenshot.png
+check_dashboard.js
+check_db_permissions.js
+extract_login.js
+fix_assertions.js
+generate_pdf.js
+run_and_report.js
+verify_m5.js
+test_locators_adversarial.js
+test_specs_adversarial.js
+read_excel_tests.js
+generate_ui_specs.js
+
+# Claude outputs
+Claude outputs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/

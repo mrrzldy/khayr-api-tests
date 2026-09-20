@@ -1,0 +1,36 @@
+{
+  "name": "khayr-api-tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node run_and_report.js",
+    "test:report": "node scripts/run-and-report.js api",
+    "test:ui": "node scripts/run-and-report.js ui",
+    "test:api": "node scripts/run-and-report.js api",
+    "test:api:report": "node scripts/run-api-report.js",
+    "test:api:only": "npx playwright test --project=api",
+    "test:ui:report": "node scripts/run-ui-report.js",
+    "test:ui:only": "npx playwright test --project=ui",
+    "test:ui:dokter": "npx playwright test --project=ui-dokter",
+    "test:ui:perawat": "npx playwright test --project=ui-perawat",
+    "test:ui:resepsionis": "npx playwright test --project=ui-resepsionis",
+    "test:ui:admin": "npx playwright test --project=ui-admin",
+    "test:ui:finance": "npx playwright test --project=ui-finance",
+    "test:ui:kasir": "npx playwright test --project=ui-kasir",
+    "test:ui:superadmin": "npx playwright test --project=ui-superadmin",
+    "report": "node scripts/run-ui-report.js",
+    "test:combined:report": "node scripts/run-combined-report.js",
+    "test:full": "node scripts/run-and-report.js api && node scripts/run-ui-report.js && node scripts/run-combined-report.js"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.62.1"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "mongodb": "^7.6.0",
+    "xlsx": "^0.18.5"
+  }
+}

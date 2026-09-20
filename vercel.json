@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "functions": {
+    "api/trigger.js": {
+      "runtime": "edge"
+    }
+  },
+  "routes": [
+    { "src": "/api/trigger", "dest": "/api/trigger.js" },
+    { "src": "/(.*)",        "dest": "/index.html" }
+  ]
+}
