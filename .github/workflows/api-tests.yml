@@ -1,0 +1,43 @@
+﻿name: API Tests
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test tests/api/ --reporter=json,html
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+          API_KEY: ${{ secrets.API_KEY }}
+        continue-on-error: true
+      - name: Parse results
+        run: |
+          node -e "
+          const fs=require('fs');
+          let raw;try{raw=JSON.parse(fs.readFileSync('test-results.json','utf8'));}catch(e){raw={};}
+          let passed=0,failed=0,total=0;
+          function walk(s){(s.specs||[]).forEach(sp=>sp.tests.forEach(t=>{total++;t.results.every(r=>r.status==='passed')?passed++:failed++;}));(s.suites||[]).forEach(walk);}
+          (raw.suites||[]).forEach(walk);
+          const passRate=total>0?Math.round(passed/total*100):0;
+          const d=raw.stats&&raw.stats.duration?(raw.stats.duration/1000).toFixed(1)+'s':'';
+          fs.mkdirSync('gh-pages',{recursive:true});
+          fs.writeFileSync('gh-pages/latest-api.json',JSON.stringify({passed,failed,total,passRate,duration:d,htmlUrl:'api-report/index.html',pdfUrl:null,ts:new Date().toISOString()},null,2));
+          "
+      - run: mkdir -p gh-pages/api-report && cp -r playwright-report/. gh-pages/api-report/ 2>/dev/null || true
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./gh-pages
+          keep_files: true
