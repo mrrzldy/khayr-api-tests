@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -64,27 +64,27 @@ h1{font-size:2rem;font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
 <body>
 
 <div class="header">
-  <div class="logo">Khayr DCMS Â· QA Automation</div>
+  <div class="logo">Khayr DCMS Ã‚Â· QA Automation</div>
   <h1>Test Trigger</h1>
   <div class="subtitle">Trigger GitHub Actions & monitor test results</div>
 </div>
 
 <!-- Trigger Card -->
 <div class="card">
-  <div class="card-title">ðŸš€ Trigger Tests</div>
+  <div class="card-title">Ã°Å¸Å¡â‚¬ Trigger Tests</div>
   <div class="btn-group">
     <button class="btn" onclick="trigger('api')">
-      <span class="icon">ðŸ”Œ</span>
+      <span class="icon">Ã°Å¸â€Å’</span>
       <span>API Tests</span>
       <span class="label">REST endpoints</span>
     </button>
     <button class="btn" onclick="trigger('ui')">
-      <span class="icon">ðŸ–¥</span>
+      <span class="icon">Ã°Å¸â€“Â¥</span>
       <span>UI Tests</span>
       <span class="label">Playwright E2E</span>
     </button>
     <button class="btn btn-all" onclick="trigger('all')">
-      <span class="icon">âš¡</span>
+      <span class="icon">Ã¢Å¡Â¡</span>
       <span>Run All</span>
       <span class="label">API + UI</span>
     </button>
@@ -95,7 +95,7 @@ h1{font-size:2rem;font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
 <!-- Latest Results Card -->
 <div class="card">
   <div class="card-title" style="display:flex;align-items:center;gap:8px">
-    ðŸ“Š Latest Results
+    Ã°Å¸â€œÅ  Latest Results
     <span id="pollIndicator"></span>
     <span style="margin-left:auto;font-size:0.7rem;color:var(--txt2)" id="lastPollTime"></span>
   </div>
@@ -103,37 +103,37 @@ h1{font-size:2rem;font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
   <div class="results-grid">
     <div class="result-card">
       <div class="result-label">API Tests</div>
-      <div class="result-stat" id="apiPassRate">â€”</div>
+      <div class="result-stat" id="apiPassRate">Ã¢â‚¬â€</div>
       <div class="result-sub" id="apiSub">not loaded</div>
     </div>
     <div class="result-card">
       <div class="result-label">UI Tests</div>
-      <div class="result-stat" id="uiPassRate">â€”</div>
+      <div class="result-stat" id="uiPassRate">Ã¢â‚¬â€</div>
       <div class="result-sub" id="uiSub">not loaded</div>
     </div>
   </div>
 
   <div class="download-links">
-    <a class="dl-link disabled" id="dlApiHtml" href="#" target="_blank">ðŸ“„ API Report (HTML)</a>
-    <a class="dl-link disabled" id="dlApiPdf"  href="#" target="_blank">ðŸ“‘ API Report (PDF)</a>
-    <a class="dl-link disabled" id="dlUiHtml"  href="#" target="_blank">ðŸ“„ UI Report (HTML)</a>
-    <a class="dl-link disabled" id="dlUiPdf"   href="#" target="_blank">ðŸ“‘ UI Report (PDF)</a>
+    <a class="dl-link disabled" id="dlApiHtml" href="#" target="_blank">Ã°Å¸â€œâ€ž API Report (HTML)</a>
+    <a class="dl-link disabled" id="dlApiPdf"  href="#" target="_blank">Ã°Å¸â€œâ€˜ API Report (PDF)</a>
+    <a class="dl-link disabled" id="dlUiHtml"  href="#" target="_blank">Ã°Å¸â€œâ€ž UI Report (HTML)</a>
+    <a class="dl-link disabled" id="dlUiPdf"   href="#" target="_blank">Ã°Å¸â€œâ€˜ UI Report (PDF)</a>
   </div>
 </div>
 
 <script>
-// â”€â”€ Config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Ã¢â€â‚¬Ã¢â€â‚¬ Config Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 // GitHub Pages base URL for your repo (update after setup)
 const PAGES_BASE = 'https://mrrzldy.github.io/khayr-api-tests';
 const CLIENT_TOKEN = ''; // optional: match CLIENT_TOKEN env var on Vercel
 
 const POLL_INTERVAL = 15000; // 15 seconds
 
-// â”€â”€ Trigger â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Ã¢â€â‚¬Ã¢â€â‚¬ Trigger Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 async function trigger(suite) {
   const box = document.getElementById('triggerStatus');
   box.className = 'status-box info';
-  box.textContent = `â³ Triggering ${suite} tests...`;
+  box.textContent = `Ã¢ÂÂ³ Triggering ${suite} tests...`;
 
   try {
     const body = { suite };
@@ -151,15 +151,15 @@ async function trigger(suite) {
       box.textContent = data.message + '\n\nResults will appear below in ~2-5 minutes once the workflow completes.';
     } else {
       box.className = 'status-box err';
-      box.textContent = `âš ï¸ ${data.message || data.error}\n\n${JSON.stringify(data.results, null, 2)}`;
+      box.textContent = `Ã¢Å¡Â Ã¯Â¸Â ${data.message || data.error}\n\n${JSON.stringify(data.results, null, 2)}`;
     }
   } catch (err) {
     box.className = 'status-box err';
-    box.textContent = `âŒ Request failed: ${err.message}`;
+    box.textContent = `Ã¢ÂÅ’ Request failed: ${err.message}`;
   }
 }
 
-// â”€â”€ Poll GitHub Pages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Ã¢â€â‚¬Ã¢â€â‚¬ Poll GitHub Pages Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 async function fetchJson(url) {
   try {
     const res = await fetch(url + '?_=' + Date.now());
@@ -188,21 +188,21 @@ async function pollResults() {
   document.getElementById('lastPollTime').textContent = 'Updated ' + new Date().toLocaleTimeString('id-ID');
 
   if (api) {
-    const pct = api.passRate ?? 'â€”';
+    const pct = api.passRate ?? 'Ã¢â‚¬â€';
     const color = api.failed > 0 ? 'var(--fail)' : 'var(--pass)';
     document.getElementById('apiPassRate').style.color = color;
     setEl('apiPassRate', pct + '%');
-    setEl('apiSub', `${api.passed}/${api.total} passed Â· ${api.duration || ''}`);
+    setEl('apiSub', `${api.passed}/${api.total} passed Ã‚Â· ${api.duration || ''}`);
     setLink('dlApiHtml', api.htmlUrl ? PAGES_BASE + '/' + api.htmlUrl : null);
     setLink('dlApiPdf',  api.pdfUrl  ? PAGES_BASE + '/' + api.pdfUrl  : null);
   }
 
   if (ui) {
-    const pct = ui.passRate ?? 'â€”';
+    const pct = ui.passRate ?? 'Ã¢â‚¬â€';
     const color = ui.failed > 0 ? 'var(--fail)' : 'var(--pass)';
     document.getElementById('uiPassRate').style.color = color;
     setEl('uiPassRate', pct + '%');
-    setEl('uiSub', `${ui.passed}/${ui.total} passed Â· ${ui.duration || ''}`);
+    setEl('uiSub', `${ui.passed}/${ui.total} passed Ã‚Â· ${ui.duration || ''}`);
     setLink('dlUiHtml', ui.htmlUrl ? PAGES_BASE + '/' + ui.htmlUrl : null);
     setLink('dlUiPdf',  ui.pdfUrl  ? PAGES_BASE + '/' + ui.pdfUrl  : null);
   }
