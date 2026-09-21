@@ -1,7 +1,23 @@
 ﻿name: UI Tests
 
 on:
+  push:
+    branches: [develop]
   workflow_dispatch:
+    inputs:
+      suite:
+        description: 'Test suite to run'
+        required: true
+        default: 'smoke'
+        type: choice
+        options:
+          - smoke
+          - regression
+          - full
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -26,14 +42,62 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Run UI tests & generate reports
-        run: node scripts/run-ui-report.js
+      - name: Determine suite
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "SUITE=smoke" >> $GITHUB_ENV
+          else
+            echo "SUITE=${{ github.event.inputs.suite }}" >> $GITHUB_ENV
+          fi
+
+      - name: Set test files
+        run: |
+          case "$SUITE" in
+            smoke)
+              echo "TEST_FILES=tests/ui/specs/01_login.spec.js tests/ui/specs/03_superadmin.spec.js" >> $GITHUB_ENV
+              ;;
+            regression)
+              echo "TEST_FILES=tests/ui/specs/01_login.spec.js tests/ui/specs/03_superadmin.spec.js tests/ui/specs/04_dokter.spec.js tests/ui/specs/05_perawat.spec.js tests/ui/specs/06_resepsionis.spec.js tests/ui/specs/07_admin.spec.js tests/ui/specs/08_finance.spec.js tests/ui/specs/09_kasir.spec.js tests/ui/specs/10_khayr_admin.spec.js tests/ui/specs/11_e2e_crossrole.spec.js" >> $GITHUB_ENV
+              ;;
+            full)
+              echo "TEST_FILES=tests/ui/specs" >> $GITHUB_ENV
+              ;;
+          esac
+
+      - name: Run UI tests
+        run: |
+          mkdir -p reports
+          TIMESTAMP=$(date +%Y-%m-%d_%H-%M-%S)
+          echo "TIMESTAMP=$TIMESTAMP" >> $GITHUB_ENV
+          JSON_OUT="reports/ui_results_${TIMESTAMP}.json"
+          echo "JSON_OUT=$JSON_OUT" >> $GITHUB_ENV
+          PLAYWRIGHT_JSON_OUTPUT_NAME="$JSON_OUT" npx playwright test $TEST_FILES \
+            --project=ui \
+            --workers=3 \
+            --reporter=list,json \
+            --retries=2 \
+            || echo "TEST_FAILED=true" >> $GITHUB_ENV
         env:
           BASE_URL: ${{ secrets.BASE_URL }}
           API_KEY: ${{ secrets.API_KEY }}
-        continue-on-error: true
+
+      - name: Fail fast on smoke failure
+        if: env.SUITE == 'smoke' && env.TEST_FAILED == 'true'
+        run: |
+          echo "Smoke tests FAILED - blocking pipeline"
+          exit 1
+
+      - name: Generate custom report
+        if: always()
+        run: |
+          if [ -f "$JSON_OUT" ]; then
+            node scripts/generate-ui-report.js "$JSON_OUT" reports "$TIMESTAMP"
+          else
+            echo "No JSON output, skipping custom report"
+          fi
 
       - name: Parse results & write summary JSON
+        if: always()
         run: |
           node -e "
           const fs = require('fs');
@@ -60,25 +124,31 @@ jobs:
           const passRate = total > 0 ? Math.round(passed/total*100) : 0;
           const stats = raw.stats || {};
           const duration = stats.duration ? (stats.duration/1000).toFixed(1)+'s' : '';
-          const out = { passed, failed, total, passRate, duration, htmlUrl: 'ui-report/index.html', pdfUrl: null, ts: new Date().toISOString() };
+          const suite = process.env.SUITE || 'full';
+          const out = { passed, failed, total, passRate, duration, suite, htmlUrl: 'ui-report/index.html', pdfUrl: null, ts: new Date().toISOString() };
           fs.mkdirSync('gh-pages', { recursive: true });
           fs.writeFileSync('gh-pages/latest-ui.json', JSON.stringify(out, null, 2));
           console.log('Summary:', JSON.stringify(out));
           "
+        env:
+          SUITE: ${{ env.SUITE }}
 
       - name: Upload UI Reports Artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ui-report-${{ github.run_number }}
+          name: ui-report-${{ github.run_number }}-${{ env.SUITE }}
           path: reports/
           retention-days: 30
 
       - name: Copy HTML report to gh-pages
+        if: always()
         run: |
           mkdir -p gh-pages/ui-report
           cp -r playwright-report/. gh-pages/ui-report/ 2>/dev/null || true
 
       - name: Publish to GitHub Pages
+        if: always()
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
