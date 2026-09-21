@@ -2,11 +2,6 @@
 
 on:
   workflow_dispatch:
-    inputs:
-      suite:
-        description: 'Test suite'
-        required: false
-        default: 'ui'
 
 permissions:
   contents: write
@@ -31,8 +26,8 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Run UI tests
-        run: npx playwright test tests/ui/specs/ --reporter=json,html
+      - name: Run UI tests & generate reports
+        run: node scripts/run-ui-report.js
         env:
           BASE_URL: ${{ secrets.BASE_URL }}
           API_KEY: ${{ secrets.API_KEY }}
@@ -42,8 +37,13 @@ jobs:
         run: |
           node -e "
           const fs = require('fs');
+          const path = require('path');
+          const dir = 'reports';
+          const files = fs.readdirSync(dir).filter(f => f.startsWith('ui_results_') && f.endsWith('.json'));
+          if (!files.length) { console.log('No JSON found'); process.exit(0); }
+          files.sort().reverse();
           let raw;
-          try { raw = JSON.parse(fs.readFileSync('test-results.json','utf8')); } catch(e) { raw = {}; }
+          try { raw = JSON.parse(fs.readFileSync(path.join(dir, files[0]), 'utf8')); } catch(e) { raw = {}; }
           const suites = raw.suites || [];
           let passed = 0, failed = 0, total = 0;
           function walk(s) {
@@ -66,14 +66,14 @@ jobs:
           console.log('Summary:', JSON.stringify(out));
           "
 
-      - name: Upload UI Report Artifact
+      - name: Upload UI Reports Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ui-report-${{ github.run_number }}
-          path: playwright-report/
+          path: reports/
           retention-days: 30
 
-      - name: Copy HTML report
+      - name: Copy HTML report to gh-pages
         run: |
           mkdir -p gh-pages/ui-report
           cp -r playwright-report/. gh-pages/ui-report/ 2>/dev/null || true
