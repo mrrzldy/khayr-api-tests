@@ -1,10 +1,10 @@
 {
-  "passed": 0,
+  "passed": 356,
   "failed": 0,
-  "total": 0,
-  "passRate": 0,
-  "duration": "",
+  "total": 356,
+  "passRate": 100,
+  "duration": "1525.2s",
   "htmlUrl": "api-report/index.html",
   "pdfUrl": null,
-  "ts": "2026-09-21T14:53:33.084Z"
+  "ts": "2026-09-21T15:36:24.754Z"
 }
