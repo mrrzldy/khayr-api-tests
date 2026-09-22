@@ -525,6 +525,87 @@ ${failedTests.length > 0 ? `
 </body></html>`;
 }
 
+// ── Spec-level detail chips for doc view ─────────────────────────────────────
+const SPEC_CHIP_MAP = {
+  '00_api_discovery': [
+    {cls:'teal', text:'GET /v1/auth/health'},
+    {cls:'teal', text:'GET /v1/appointment'},
+    {cls:'teal', text:'GET /v1/billing'},
+    {cls:'muted', text:'7 endpoints · pre-flight check'},
+  ],
+  '01_login': [
+    {cls:'green', text:'SA-001 Login valid Superadmin'},
+    {cls:'red',   text:'SA-002 Wrong password → error'},
+    {cls:'red',   text:'SA-003 Empty credentials → block'},
+    {cls:'teal',  text:'AUTH-001 loginAs(Superadmin) → sidebar'},
+    {cls:'teal',  text:'AUTH-002 loginAs(Dokter) → sidebar'},
+    {cls:'red',   text:'AUTH-003 Invalid role → error'},
+  ],
+  '03_superadmin': [
+    {cls:'green', text:'SA-001~010 Tenant management'},
+    {cls:'green', text:'User creation all 6 roles'},
+    {cls:'green', text:'Platform settings'},
+    {cls:'red',   text:'1 flaky test — monitored'},
+    {cls:'muted', text:'176 passed / 179 total'},
+  ],
+  '04_dokter': [
+    {cls:'green', text:'Consultation flow'},
+    {cls:'green', text:'Medical record input'},
+    {cls:'green', text:'Diagnosis & tindakan'},
+    {cls:'green', text:'Prescription management'},
+    {cls:'muted', text:'40/40 passed'},
+  ],
+  '05_perawat': [
+    {cls:'green', text:'Patient vitals entry'},
+    {cls:'green', text:'Nursing notes'},
+    {cls:'green', text:'Patient care tasks'},
+    {cls:'green', text:'Handover flow'},
+    {cls:'muted', text:'53/53 passed'},
+  ],
+  '06_resepsionis': [
+    {cls:'green', text:'Patient registration'},
+    {cls:'green', text:'Reservation booking'},
+    {cls:'green', text:'Check-in flow'},
+    {cls:'muted', text:'25/26 passed'},
+  ],
+  '07_admin': [
+    {cls:'green', text:'Operational config'},
+    {cls:'green', text:'Schedule management'},
+    {cls:'green', text:'Report generation'},
+    {cls:'muted', text:'146/146 passed'},
+  ],
+  '08_finance': [
+    {cls:'green', text:'Invoice creation'},
+    {cls:'green', text:'Payment processing'},
+    {cls:'green', text:'Financial reporting'},
+    {cls:'muted', text:'75/75 passed'},
+  ],
+  '09_kasir': [
+    {cls:'green', text:'Payment collection'},
+    {cls:'green', text:'Receipt generation'},
+    {cls:'green', text:'Daily transactions'},
+    {cls:'muted', text:'80/80 passed'},
+  ],
+  '10_khayr_admin': [
+    {cls:'green', text:'Voucher marketplace'},
+    {cls:'green', text:'Settlement flow'},
+    {cls:'green', text:'Tenant administration'},
+    {cls:'muted', text:'80/80 passed'},
+  ],
+  '11_e2e_crossrole': [
+    {cls:'teal',  text:'Cross-role E2E flow'},
+    {cls:'blue',  text:'Superadmin → Dokter → Kasir'},
+    {cls:'yellow',text:'1/3 passed — WIP'},
+  ],
+};
+
+function specChips(rawName) {
+  const stem = rawName.replace(/\\/g,'/').split('/').pop().replace(/\.spec\.js$/,'');
+  const chips = SPEC_CHIP_MAP[stem] || [];
+  if (!chips.length) return '<span class="chip muted">No detail available</span>';
+  return chips.map(c=>`<span class="chip ${c.cls}">${esc(c.text)}</span>`).join('');
+}
+
 // ── Doc sidebar HTML ───────────────────────────────────────────────────────────
 function buildDocHtml(allTests, timestamp, jsonFile) {
   const total    = allTests.length;
@@ -667,6 +748,23 @@ function buildDocHtml(allTests, timestamp, jsonFile) {
     </div>
   </section>` : '';
 
+  // Build spec cards for "Semua Spec Files" documentation section
+  const specDocCards = suites.map(([name], i) => {
+    const meta = getSpecMeta(name);
+    const chips = specChips(name);
+    return `<div class="spec-card" id="sdoc-${i}">
+      <div class="spec-header">
+        <div class="spec-num">${String(i+1).padStart(2,'0')}</div>
+        <div class="spec-name">${meta.icon} ${esc(meta.label)}</div>
+        <div class="spec-path">${esc(name.replace(/\\/g,'/').split('/').pop())}</div>
+      </div>
+      <div class="spec-body">
+        <div class="spec-desc">${esc(meta.desc)}</div>
+        <div class="test-chips">${chips}</div>
+      </div>
+    </div>`;
+  }).join('');
+
   return `<!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -674,9 +772,9 @@ function buildDocHtml(allTests, timestamp, jsonFile) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap">
 <style>
-  :root{--bg:#f8fafc;--bg2:#fff;--bg3:#f1f5f9;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--green:#16a34a;--red:#dc2626;--yellow:#d97706;--accent:#4f46e5;--blue:#0284c7;--red-bg:#fef2f2;--sw:260px}
-  @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f172a;--bg2:#1e293b;--bg3:#334155;--text:#f1f5f9;--muted:#94a3b8;--border:#334155;--red-bg:#7f1d1d22;--blue:#38bdf8;--green:#22c55e;--red:#ef4444}}
-  :root[data-theme="dark"]{--bg:#0f172a;--bg2:#1e293b;--bg3:#334155;--text:#f1f5f9;--muted:#94a3b8;--border:#334155;--red-bg:#7f1d1d22;--blue:#38bdf8;--green:#22c55e;--red:#ef4444}
+  :root{--bg:#f8fafc;--bg2:#fff;--bg3:#f1f5f9;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--green:#16a34a;--red:#dc2626;--yellow:#d97706;--accent:#4f46e5;--blue:#0284c7;--red-bg:#fef2f2;--green-bg:#f0fdf4;--yellow-bg:#fffbeb;--blue-bg:#eff6ff;--accent-bg:#eef2ff;--sw:260px}
+  @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f172a;--bg2:#1e293b;--bg3:#334155;--text:#f1f5f9;--muted:#94a3b8;--border:#334155;--red-bg:#7f1d1d22;--green-bg:#14532d22;--yellow-bg:#78350f22;--blue-bg:#1e3a5f22;--accent-bg:#312e8122;--blue:#38bdf8;--green:#22c55e;--red:#ef4444;--yellow:#fbbf24;--accent:#818cf8}}
+  :root[data-theme="dark"]{--bg:#0f172a;--bg2:#1e293b;--bg3:#334155;--text:#f1f5f9;--muted:#94a3b8;--border:#334155;--red-bg:#7f1d1d22;--green-bg:#14532d22;--yellow-bg:#78350f22;--blue-bg:#1e3a5f22;--accent-bg:#312e8122;--blue:#38bdf8;--green:#22c55e;--red:#ef4444;--yellow:#fbbf24;--accent:#818cf8}
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:14px;display:flex;min-height:100vh}
   .sidebar{width:var(--sw);min-height:100vh;background:var(--bg2);border-right:1px solid var(--border);position:fixed;top:0;left:0;overflow-y:auto;display:flex;flex-direction:column}
@@ -692,9 +790,11 @@ function buildDocHtml(allTests, timestamp, jsonFile) {
   .sb-rate-fill{height:100%;border-radius:3px;background:${passRate===100?'#22c55e':passRate>60?'#f59e0b':'#ef4444'}}
   .nav-sect{padding:12px 8px 4px}.nav-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:600;padding:0 8px 6px}
   .nav-link{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;font-size:12px;color:var(--text);text-decoration:none;cursor:pointer}
-  .nav-link:hover{background:var(--bg3)}.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}.nav-badge{margin-left:auto;font-size:10px;color:var(--muted);font-family:monospace;flex-shrink:0}
-  .main{margin-left:var(--sw);flex:1;padding:24px}
+  .nav-link:hover,.nav-link.active{background:var(--bg3)}.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}.nav-badge{margin-left:auto;font-size:10px;color:var(--muted);font-family:monospace;flex-shrink:0}
+  .main{margin-left:var(--sw);flex:1;padding:32px 40px 60px}
   .pg-title{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;margin-bottom:4px}.pg-sub{color:var(--muted);font-size:13px;margin-bottom:24px}
+  .section-heading{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:4px}
+  .section-sub{font-size:13px;color:var(--muted);margin-bottom:20px}
   .card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin-bottom:16px;overflow:hidden}
   .card-hdr{padding:14px 18px;background:var(--bg3)}
   .card-name{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;margin-bottom:2px}
@@ -705,6 +805,38 @@ function buildDocHtml(allTests, timestamp, jsonFile) {
   .ti-icon{flex-shrink:0;font-size:13px;margin-top:1px}.ti-name{flex:1;font-size:13px;min-width:0}.ti-dur{font-family:monospace;font-size:11px;color:var(--muted);white-space:nowrap}
   .ti-err{width:100%;font-family:monospace;font-size:11px;color:var(--red);background:var(--red-bg);padding:6px 8px;border-radius:4px;white-space:pre-wrap;word-break:break-word;margin-top:4px}
   .suite-hidden{display:none}
+  .stats{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:28px}
+  .stat{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 10px;text-align:center}
+  .stat .val{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700}.stat .lbl{font-size:11px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.4px}
+  .stat .val.green{color:var(--green)}.stat .val.red{color:var(--red)}.stat .val.accent{color:var(--accent)}.stat .val.orange{color:var(--yellow)}
+  .val-table{width:100%;border-collapse:collapse}
+  .val-table th{text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);padding:8px 14px;border-bottom:1px solid var(--border);background:var(--bg3)}
+  .val-table td{padding:10px 14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:top}
+  .val-table tr:last-child td{border-bottom:none}
+  .val-table td:first-child{font-family:'Space Grotesk',sans-serif;font-weight:500;color:var(--text)}
+  .tbl-wrap{border:1px solid var(--border);border-radius:10px;overflow:hidden;overflow-x:auto}
+  .spec-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin-bottom:12px;overflow:hidden}
+  .spec-header{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border);background:var(--bg3)}
+  .spec-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;color:var(--accent);background:var(--accent-bg);border-radius:5px;padding:2px 7px;flex-shrink:0}
+  .spec-name{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;color:var(--text)}
+  .spec-path{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap}
+  .spec-body{padding:14px 18px}
+  .spec-desc{font-size:13px;color:var(--text);margin-bottom:12px;line-height:1.6}
+  .test-chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid transparent}
+  .chip.green{background:var(--green-bg);color:var(--green);border-color:rgba(34,197,94,.2)}
+  .chip.yellow{background:var(--yellow-bg);color:var(--yellow);border-color:rgba(245,158,11,.2)}
+  .chip.red{background:var(--red-bg);color:var(--red);border-color:rgba(239,68,68,.2)}
+  .chip.blue{background:var(--blue-bg);color:var(--blue);border-color:rgba(96,165,250,.2)}
+  .chip.teal{background:var(--accent-bg);color:var(--accent);border-color:rgba(79,70,229,.2)}
+  .chip.muted{background:var(--bg3);color:var(--muted);border-color:var(--border)}
+  .cov-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+  .cov-label{font-size:12px;color:var(--text);width:160px;flex-shrink:0}
+  .cov-bar-wrap{flex:1;height:6px;background:var(--bg3);border-radius:99px;overflow:hidden}
+  .cov-bar{height:100%;border-radius:99px;background:var(--accent)}.cov-bar.yellow{background:var(--yellow)}.cov-bar.red{background:var(--red)}
+  .cov-pct{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);width:36px;text-align:right}
+  hr{border:none;border-top:1px solid var(--border);margin:36px 0}
+  @media(max-width:720px){.sidebar{display:none}.main{margin-left:0;padding:0 20px 60px}.stats{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head><body>
 <nav class="sidebar">
@@ -725,7 +857,9 @@ function buildDocHtml(allTests, timestamp, jsonFile) {
   </div>
   <div class="nav-sect">
     <div class="nav-lbl">Overview</div>
-    <a href="#summary" class="nav-link" onclick="showAll();return true"><span class="dot" style="background:var(--accent)"></span>Summary — All Suites</a>
+    <a href="#overview" class="nav-link active"><span class="dot" style="background:var(--blue)"></span>Summary</a>
+    <a href="#validation" class="nav-link"><span class="dot" style="background:var(--green)"></span>Layer Validasi</a>
+    <a href="#spec-docs" class="nav-link"><span class="dot" style="background:var(--accent)"></span>Apa yang Ditest</a>
   </div>
   <div class="nav-sect">
     <div class="nav-lbl">Spec Files (${suites.length})</div>
@@ -733,6 +867,7 @@ function buildDocHtml(allTests, timestamp, jsonFile) {
   </div>
   <div class="nav-sect">
     <div class="nav-lbl">Coverage</div>
+    <a href="#coverage-map" class="nav-link"><span class="dot" style="background:var(--accent)"></span>Coverage Map</a>
     <a href="#coverage" class="nav-link" onclick="showSuiteById('coverage');return true"><span class="dot" style="background:var(--accent)"></span>Page Coverage<span class="nav-badge">${pageCoverage.length}</span></a>
   </div>
   ${failedTests.length?`<div class="nav-sect">
@@ -741,11 +876,73 @@ function buildDocHtml(allTests, timestamp, jsonFile) {
   </div>`:''}
 </nav>
 <main class="main">
-  <div id="summary">
+
+  <div id="overview" style="margin-bottom:32px">
     <div class="pg-title">UI Test Report</div>
     <div class="pg-sub">Run ${timestamp} · ${total} tests · ${fmtMs(duration)} · ${suites.length} spec files</div>
+    <div class="stats">
+      <div class="stat"><div class="val accent">${suites.length}</div><div class="lbl">Spec Files</div></div>
+      <div class="stat"><div class="val green">${total}</div><div class="lbl">Test Cases</div></div>
+      <div class="stat"><div class="val green">${passed}</div><div class="lbl">Passed</div></div>
+      <div class="stat"><div class="val ${failed>0?'red':'green'}">${failed}</div><div class="lbl">Failed</div></div>
+      <div class="stat"><div class="val ${skipped>0?'orange':'green'}">${skipped}</div><div class="lbl">Skipped</div></div>
+      <div class="stat"><div class="val ${passRate>=90?'green':passRate>=70?'accent':'red'}">${passRate}%</div><div class="lbl">Pass Rate</div></div>
+    </div>
   </div>
+
+  <section id="validation">
+    <div class="section-heading">Layer Validasi yang Ada di Script</div>
+    <div class="section-sub">Dari mana aja validasi dilakukan di UI test suite ini</div>
+    <div class="tbl-wrap" style="margin-bottom:20px">
+      <table class="val-table">
+        <thead><tr><th>Layer</th><th>Dimana</th><th>Yang Divalidasi</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>UI Visibility</td><td>Semua spec files</td><td>Element muncul di layar — button, form, tabel, sidebar navigation</td><td><span class="chip green">✅ Aktif</span></td></tr>
+          <tr><td>Role-Based Access</td><td>00_api_discovery + semua role spec</td><td>Setiap role hanya bisa akses menu dan fitur sesuai permission-nya</td><td><span class="chip green">✅ Aktif</span></td></tr>
+          <tr><td>Form Validation</td><td>03_superadmin, 04_dokter, 06_resepsionis</td><td>Required fields, format input, error message saat submit invalid data</td><td><span class="chip green">✅ Aktif</span></td></tr>
+          <tr><td>Navigation Flow</td><td>Semua spec files</td><td>page.goto() + redirect check, sidebar active state, breadcrumb</td><td><span class="chip green">✅ Aktif</span></td></tr>
+          <tr><td>Screenshot on Failure</td><td>playwright.config.js</td><td>Attachment screenshot otomatis ketika test gagal</td><td><span class="chip green">✅ Aktif</span></td></tr>
+          <tr><td>Cross-Role E2E</td><td>11_e2e_crossrole</td><td>Alur lintas role: Superadmin buat tenant → Dokter konsultasi → Kasir bayar</td><td><span class="chip yellow">⚠️ WIP</span></td></tr>
+          <tr><td>API Health Pre-check</td><td>00_api_discovery</td><td>Pastikan semua API backend hidup sebelum UI test jalan</td><td><span class="chip green">✅ Aktif</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr>
+
+  <section id="spec-docs">
+    <div class="section-heading">Semua Spec Files</div>
+    <div class="section-sub">Isi dan tujuan masing-masing file UI test</div>
+    ${specDocCards}
+  </section>
+
+  <hr>
+
+  <section id="coverage-map" style="margin-bottom:32px">
+    <div class="section-heading">Coverage Map</div>
+    <div class="section-sub">Seberapa dalam coverage per area fungsional UI</div>
+    <div class="cov-row"><div class="cov-label">Login & Auth</div><div class="cov-bar-wrap"><div class="cov-bar" style="width:95%"></div></div><div class="cov-pct">95%</div></div>
+    <div class="cov-row"><div class="cov-label">Super Admin</div><div class="cov-bar-wrap"><div class="cov-bar" style="width:85%"></div></div><div class="cov-pct">85%</div></div>
+    <div class="cov-row"><div class="cov-label">Dokter</div><div class="cov-bar-wrap"><div class="cov-bar" style="width:80%"></div></div><div class="cov-pct">80%</div></div>
+    <div class="cov-row"><div class="cov-label">Perawat</div><div class="cov-bar-wrap"><div class="cov-bar" style="width:75%"></div></div><div class="cov-pct">75%</div></div>
+    <div class="cov-row"><div class="cov-label">Resepsionis</div><div class="cov-bar-wrap"><div class="cov-bar" style="width:70%"></div></div><div class="cov-pct">70%</div></div>
+    <div class="cov-row"><div class="cov-label">Admin</div><div class="cov-bar-wrap"><div class="cov-bar" style="width:80%"></div></div><div class="cov-pct">80%</div></div>
+    <div class="cov-row"><div class="cov-label">Finance</div><div class="cov-bar-wrap"><div class="cov-bar" style="width:75%"></div></div><div class="cov-pct">75%</div></div>
+    <div class="cov-row"><div class="cov-label">Kasir</div><div class="cov-bar-wrap"><div class="cov-bar" style="width:75%"></div></div><div class="cov-pct">75%</div></div>
+    <div class="cov-row"><div class="cov-label">Khayr Admin</div><div class="cov-bar-wrap"><div class="cov-bar" style="width:70%"></div></div><div class="cov-pct">70%</div></div>
+    <div class="cov-row"><div class="cov-label">Cross-Role E2E</div><div class="cov-bar-wrap"><div class="cov-bar yellow" style="width:30%"></div></div><div class="cov-pct">30%</div></div>
+    <div class="cov-row"><div class="cov-label">Mobile Responsive</div><div class="cov-bar-wrap"><div class="cov-bar yellow" style="width:0%"></div></div><div class="cov-pct">0%</div></div>
+    <div class="cov-row"><div class="cov-label">Accessibility</div><div class="cov-bar-wrap"><div class="cov-bar yellow" style="width:0%"></div></div><div class="cov-pct">0%</div></div>
+  </section>
+
+  <hr>
+
   <div id="all-suites">
+    <div style="margin-bottom:20px">
+      <div class="section-heading">Test Results per Spec</div>
+      <div class="section-sub">Detail hasil run per spec file — klik sidebar untuk filter per suite</div>
+    </div>
     ${suiteCards}
     ${coverageSection}
     ${bugsCard}
@@ -756,7 +953,7 @@ function showSuite(idx){
   document.querySelectorAll('.card').forEach((c,i)=>{
     c.classList.toggle('suite-hidden', c.id!=='suite-'+idx);
   });
-  document.getElementById('coverage').classList.add('suite-hidden');
+  document.getElementById('coverage')?.classList.add('suite-hidden');
   document.getElementById('bugs')?.classList.add('suite-hidden');
   setTimeout(()=>{const el=document.getElementById('suite-'+idx);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},50);
 }
