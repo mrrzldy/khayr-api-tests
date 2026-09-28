@@ -1053,6 +1053,7 @@ console.log(`✅ SUMMARY → ${summaryPath}`);
 
 // PDF via lightweight print HTML (timeout 60s)
 (async () => {
+  if (process.env.CI) { console.log("⏭️  PDF skipped in CI"); return; }
   try {
     const { chromium } = require('playwright');
     const pdfHtmlContent = buildPdfHtml(allTests, timestamp);

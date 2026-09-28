@@ -1080,6 +1080,7 @@ console.log(`✅ TXT  → ${txtPath}`);
 
 // PDF via Playwright — dedicated print-optimized template (not the dark interactive HTML)
 (async () => {
+  if (process.env.CI) { console.log("⏭️  PDF skipped in CI"); return; }
   try {
     const { chromium } = require('playwright');
     const pdfHtmlContent = buildPdfHtml(allTests, timestamp, jsonFile);
