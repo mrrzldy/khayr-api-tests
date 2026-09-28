@@ -1,11 +1,11 @@
 {
-  "passed": 16,
+  "passed": 181,
   "failed": 0,
-  "total": 16,
+  "total": 181,
   "passRate": 100,
-  "duration": "9.1s",
-  "suite": "smoke",
+  "duration": "102.8s",
+  "suite": "regression",
   "htmlUrl": "api-report/index.html",
   "pdfUrl": null,
-  "ts": "2026-09-28T02:43:00.861Z"
+  "ts": "2026-09-28T02:48:28.889Z"
 }
