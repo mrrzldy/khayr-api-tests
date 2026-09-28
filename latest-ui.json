@@ -1,0 +1,11 @@
+{
+  "passed": 183,
+  "failed": 2,
+  "total": 185,
+  "passRate": 99,
+  "duration": "5221.8s",
+  "suite": "smoke",
+  "htmlUrl": "ui-report/index.html",
+  "pdfUrl": null,
+  "ts": "2026-09-28T04:10:09.849Z"
+}
