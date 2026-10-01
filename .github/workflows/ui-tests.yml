@@ -79,7 +79,7 @@ jobs:
             --workers=3 \
             --reporter=list,json \
             --retries=1 \
-        --timeout=30000 \
+            --timeout=30000 \
             || echo "TEST_FAILED=true" >> $GITHUB_ENV
         env:
           BASE_URL: ${{ secrets.BASE_URL }}
